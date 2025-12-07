@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --font-poppins: "Poppins", sans-serif;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --background: #ededed;
+    --foreground: #ededed;
+  }
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  scroll-behavior: smooth;
+}
+
+.ql-container {
+  min-height: 100px;
+}
+.ql-editor.ql-blank {
+  min-height: 100px;
+}
+
+.ql-bubble .ql-editor {
+  padding: 0px !important;
+}
+
+.chakra-accordion__item{
+  border: none;
+  border-bottom: 1px solid #004FC0 !important;
+}
+
+.chakra-accordion__button{
+  padding-block: 11px !important;
+}
