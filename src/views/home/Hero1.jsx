@@ -72,13 +72,13 @@ const HeroSlider = () => {
       <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
         <div className="max-w-4xl w-full">
           {/* Logo */}
-          <div className="mb-3 sm:mb-4 md:mb-5 animate-fade-in">
+          {/* <div className="mb-3 sm:mb-4 md:mb-5 animate-fade-in">
             <img 
               src="/logo2.png" 
               alt="Hobi Holidays Tour" 
               className="h-10 sm:h-14 md:h-16 lg:h-20 w-auto mx-auto"
             />
-          </div>
+          </div> */}
 
           {/* Main Heading */}
           <h1 className="text-lg sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-white mb-2 sm:mb-3 md:mb-4 leading-tight animate-slide-up px-2">
