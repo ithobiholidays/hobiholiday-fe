@@ -358,8 +358,8 @@ const Packages = () => {
                 </button>
 
                 <a
-                  href={`https://wa.me/?text=${encodeURIComponent(
-                    `${product?.title} - ${
+                  href={`https://wa.me/6282310702343?text=${encodeURIComponent(
+                    `Halo, saya tertarik dengan paket tour:\n\n${product?.title}\nTanggal: ${product?.date}\nHarga: ${convertPrice(product?.discPrice)} Juta/pax\n\nLink: ${
                       window.location.origin
                     }/tour-schedule/category/${slugify(
                       selectedCategory.name
