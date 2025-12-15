@@ -39,9 +39,6 @@ const Footer = () => {
                 Bandung - +62 813-1277-7988
               </p>
               <p className="3xl:text-base sm:text-sm">
-                Semarang - +62 815-2777-7173
-              </p>
-              <p className="3xl:text-base sm:text-sm">
                 Senayan - +62 877-8078-3371
               </p>
               <div className="flex space-x-1 mt-6">
@@ -164,6 +161,9 @@ const Footer = () => {
             <h2 className="font-bold text-lg mt-4">OPENING HOURS</h2>
             <p className="3xl:text-base sm:text-sm">
               Mon - Fri: 09.00 - 18.00 WIB
+            </p>
+            <p className="3xl:text-base sm:text-sm">
+              Saturday: 00.90 - 13.00 WIB
             </p>
 
             <h2 className="font-bold text-lg mt-4 xs:hidden xl:block 2xl:hidden">

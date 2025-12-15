@@ -8,20 +8,20 @@ const HeroSlider = () => {
   
   const slides = [
     {
-      image: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1920&q=80',
-      alt: 'Beach Paradise'
+      image: '/hero 1.jpg',
+      alt: ''
     },
     {
-      image: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=1920&q=80',
-      alt: 'Mountain Adventure'
+      image: '/hero 2.jpg',
+      alt: ''
     },
     {
-      image: 'https://images.unsplash.com/photo-1530789253388-582c481c54b0?w=1920&q=80',
-      alt: 'City Exploration'
+      image: '/hero 3.jpg',
+      alt: ''
     },
     {
-      image: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1920&q=80',
-      alt: 'Nature Journey'
+      image: '/hero 4.jpg',
+      alt: ''
     }
   ];
 
