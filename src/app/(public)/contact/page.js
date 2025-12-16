@@ -18,12 +18,6 @@ export default function Contact() {
       image: "/agent/riska.jpg",
     },
     {
-      name: "Nabila Wahida Salma",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-      image: "/agent/nabila.jpg",
-    },
-    {
       name: "Fahrul Rodzi",
       description:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
