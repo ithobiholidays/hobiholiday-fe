@@ -345,9 +345,15 @@ const Packages = () => {
                   className="bg-[#FFA80F] py-1.5 px-2 rounded-full flex gap-1 items-center hover:opacity-80"
                   onClick={(e) => {
                     e.stopPropagation();
+                    // Bersihkan nama file dari karakter yang bermasalah
+                    const cleanFileName = product?.title
+                      .replace(/\./g, '') // Hapus semua titik
+                      .replace(/[\/\\:*?"<>|]/g, '_') // Ganti karakter ilegal dengan underscore
+                      .trim();
+                    
                     downloadFileFromUrl(
                       `${product?.iteneraryHost}${product?.itenerary}`,
-                      product?.title
+                      cleanFileName
                     );
                   }}
                 >

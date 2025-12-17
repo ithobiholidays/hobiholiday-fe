@@ -376,12 +376,19 @@ const TripDetailContent = () => {
                   </a>
 
                   <button
-                    onClick={() =>
+                    onClick={() => {
+                      // Bersihkan nama file dari karakter yang bermasalah
+                      const cleanFileName = tripData?.title
+                        .replace(/\./g, '_') // Ganti semua titik dengan underscore
+                        .replace(/[\/\\:*?"<>|]/g, '_') // Ganti karakter ilegal dengan underscore
+                        .replace(/\s+/g, '_') // Ganti spasi dengan underscore
+                        .trim();
+                      
                       downloadFileFromUrl(
                         `${tripData?.iteneraryHost}${tripData?.itenerary}`,
-                        tripData?.title
-                      )
-                    }
+                        cleanFileName
+                      );
+                    }}
                     className="w-full bg-gradient-to-r from-[#FFA80F] to-[#FF9500] text-white py-4 xl:py-5 px-6 rounded-xl hover:from-[#FF9500] hover:to-[#FF8500] transition-all shadow-lg hover:shadow-2xl transform hover:-translate-y-1 border-2 border-orange-400/30"
                   >
                     <div className="flex items-center justify-center gap-3 group">
@@ -432,12 +439,19 @@ const TripDetailContent = () => {
           {/* Action Buttons */}
           <div className="grid grid-cols-2 gap-2 sm:gap-3">
             <button
-              onClick={() =>
+              onClick={() => {
+                // Bersihkan nama file dari karakter yang bermasalah
+                const cleanFileName = tripData?.title
+                  .replace(/\./g, '_') // Ganti semua titik dengan underscore
+                  .replace(/[\/\\:*?"<>|]/g, '_') // Ganti karakter ilegal dengan underscore
+                  .replace(/\s+/g, '_') // Ganti spasi dengan underscore
+                  .trim();
+                
                 downloadFileFromUrl(
                   `${tripData?.iteneraryHost}${tripData?.itenerary}`,
-                  tripData?.title
-                )
-              }
+                  cleanFileName
+                );
+              }}
               className="bg-white border-2 border-[#FFA80F] text-[#FFA80F] py-2.5 sm:py-3 px-3 sm:px-4 rounded-lg sm:rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 active:scale-95 transition-all font-bold text-xs sm:text-sm"
             >
               <FiDownload className="text-base sm:text-lg flex-shrink-0" />

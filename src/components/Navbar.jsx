@@ -274,7 +274,7 @@ function Navbar() {
             </button>
           </a>
           <a
-            href="https://web.facebook.com/kelilingduniahobiholidays"
+            href="https://www.facebook.com/hobiholidays/"
             target="_blank"
             rel="noopener noreferrer"
           >
