@@ -12,6 +12,7 @@ import { useGetData, usePostData } from "@/utils/api";
 import { convertPrice, downloadFileFromUrl, formatIDR } from "@/utils/common";
 import DOMPurify from "dompurify";
 import { slugify } from "@/utils/hooks/slugify";
+import SafeHTMLContent from "@/components/SafeHTMLContent";
 
 const TripDetailContent = () => {
   const params = useParams();
@@ -283,10 +284,7 @@ const TripDetailContent = () => {
                   </h2>
                 </div>
 
-                <div
-                  dangerouslySetInnerHTML={{ __html: sanitizedContent }}
-                  className="prose prose-sm sm:prose-base lg:prose-lg max-w-none prose-headings:text-[#004FC0] prose-headings:font-bold prose-headings:mb-3 prose-headings:mt-4 first:prose-headings:mt-0 prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-3 prose-p:text-sm sm:prose-p:text-base prose-li:text-gray-700 prose-li:my-1 prose-li:text-sm sm:prose-li:text-base prose-li:leading-relaxed prose-strong:text-[#004FC0] prose-strong:font-semibold prose-a:text-[#FFA80F] prose-a:no-underline hover:prose-a:underline prose-ul:my-3 prose-ul:pl-5 prose-ol:my-3 prose-ol:pl-5 prose-img:rounded-xl prose-img:shadow-md prose-img:my-4 [&>*]:break-words"
-                />
+                <SafeHTMLContent htmlContent={tripData?.description} />
               </div>
             </div>
 
