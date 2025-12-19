@@ -23,7 +23,7 @@ const Footer = () => {
               <p>Jl Raya Jatiwaringin No 24 RT 5/RW 5</p>
               <p>Cipinang Melayu, Makassar Jakarta Timur 13620</p> */}
               <p className="3xl:text-base sm:text-sm">T: 021 - 86330199</p>
-              <p className="3xl:text-base sm:text-sm">WA: 0895-3286-58327</p>
+              <p className="3xl:text-base sm:text-sm">WA: +62823-1070-2343</p>
               <p className="3xl:text-base sm:text-sm">
                 Email: halo@hobiholidays.com
               </p>
