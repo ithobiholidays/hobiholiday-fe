@@ -175,6 +175,7 @@ const AddEditPackagesView = () => {
 
   const handleSearch = (query) => {
     setSearchValue(query);
+    setPage(1);
   };
 
   useEffect(() => {
