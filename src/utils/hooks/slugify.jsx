@@ -1,5 +1,5 @@
-function slugify(text) {
-  if (!text) return ""; // handle undefined, null, empty
+export function slugify(text) {
+  if (!text) return "";
 
   return text
     .toString()
@@ -12,17 +12,14 @@ function slugify(text) {
     .replace(/^-+|-+$/g, "");
 }
 
-function deslugify(slug) {
+export function deslugify(slug) {
   if (!slug) return "";
 
-  if (slug)
-    return slug
-      .replace(/-comma/g, ",")
-      .replace(/plus/g, "+")
-      .replace(/-and/g, " &")
-      .replace(/-/g, " ")
-      .replace(/\s+,/g, ",")
-      .replace(/\b\w/g, (c) => c.toUpperCase());
+  return slug
+    .replace(/-comma/g, ",")
+    .replace(/plus/g, "+")
+    .replace(/-and/g, " &")
+    .replace(/-/g, " ")
+    .replace(/\s+,/g, ",")
+    .replace(/\b\w/g, (c) => c.toUpperCase());
 }
-
-module.exports = { slugify, deslugify };
