@@ -66,6 +66,25 @@ const AddEditPackagesView = () => {
   const [perPage, setPerPage] = useState(7);
   const [selectedItem, setSelectedItem] = useState('');
   const [searchValue, setSearchValue] = useState('');
+  const [filterMonth, setFilterMonth] = useState('');
+  const [filterYear, setFilterYear] = useState('');
+
+  const months = [
+    { value: '1', label: 'January' },
+    { value: '2', label: 'February' },
+    { value: '3', label: 'March' },
+    { value: '4', label: 'April' },
+    { value: '5', label: 'May' },
+    { value: '6', label: 'June' },
+    { value: '7', label: 'July' },
+    { value: '8', label: 'August' },
+    { value: '9', label: 'September' },
+    { value: '10', label: 'October' },
+    { value: '11', label: 'November' },
+    { value: '12', label: 'December' },
+  ];
+
+  const years = ['2025', '2026', '2027', '2028'];
 
   const handleToggleSwitch = (row) => {
     onOpenSwitch();
@@ -177,6 +196,8 @@ const AddEditPackagesView = () => {
       await postData(`/product/alls?s=all&search=${searchValue}`, {
         p: page,
         limit: perPage,
+        ...(filterMonth && { month: filterMonth }),
+        ...(filterYear && { year: filterYear }),
       });
     } catch (error) {
       console.log(error);
@@ -190,7 +211,7 @@ const AddEditPackagesView = () => {
 
   useEffect(() => {
     fetchData();
-  }, [page, searchValue]);
+  }, [page, searchValue, filterMonth, filterYear]);
 
   return (
     <div>
@@ -204,6 +225,36 @@ const AddEditPackagesView = () => {
           <CustomButton>Add New Package</CustomButton>
         </Link>
         <SearchBar onSearch={handleSearch} />
+      </div>
+      <div className="flex items-center gap-2 mt-3 justify-end">
+        <select
+          value={filterMonth}
+          onChange={(e) => { setFilterMonth(e.target.value); setPage(1); }}
+          className="border border-gray-300 rounded px-2 py-1 text-sm"
+        >
+          <option value="">All Months</option>
+          {months.map((m) => (
+            <option key={m.value} value={m.value}>{m.label}</option>
+          ))}
+        </select>
+        <select
+          value={filterYear}
+          onChange={(e) => { setFilterYear(e.target.value); setPage(1); }}
+          className="border border-gray-300 rounded px-2 py-1 text-sm"
+        >
+          <option value="">All Years</option>
+          {years.map((y) => (
+            <option key={y} value={y}>{y}</option>
+          ))}
+        </select>
+        {(filterMonth || filterYear) && (
+          <button
+            onClick={() => { setFilterMonth(''); setFilterYear(''); setPage(1); }}
+            className="text-sm text-red-500 hover:text-red-700"
+          >
+            Reset
+          </button>
+        )}
       </div>
 
       <CustomTable
