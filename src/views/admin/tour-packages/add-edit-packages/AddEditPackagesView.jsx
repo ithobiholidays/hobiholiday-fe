@@ -33,6 +33,7 @@ const paths = [
 
 const AddEditPackagesView = () => {
   const { postData, data, totalData, loading } = usePostData();
+  const { getData: getCategories, data: dataCategories } = useGetData();
   const { showToast } = useCustomToast();
 
   const {
@@ -68,6 +69,7 @@ const AddEditPackagesView = () => {
   const [searchValue, setSearchValue] = useState('');
   const [filterMonth, setFilterMonth] = useState('');
   const [filterYear, setFilterYear] = useState('');
+  const [filterCategory, setFilterCategory] = useState('');
 
   const months = [
     { value: '1', label: 'January' },
@@ -198,6 +200,7 @@ const AddEditPackagesView = () => {
         limit: perPage,
         ...(filterMonth && { month: filterMonth }),
         ...(filterYear && { year: filterYear }),
+        ...(filterCategory && { categoryId: filterCategory }),
       });
     } catch (error) {
       console.log(error);
@@ -210,8 +213,12 @@ const AddEditPackagesView = () => {
   };
 
   useEffect(() => {
+    getCategories('/category/all');
+  }, []);
+
+  useEffect(() => {
     fetchData();
-  }, [page, searchValue, filterMonth, filterYear]);
+  }, [page, searchValue, filterMonth, filterYear, filterCategory]);
 
   return (
     <div>
@@ -227,6 +234,16 @@ const AddEditPackagesView = () => {
         <SearchBar onSearch={handleSearch} />
       </div>
       <div className="flex items-center gap-2 mt-3 justify-end">
+        <select
+          value={filterCategory}
+          onChange={(e) => { setFilterCategory(e.target.value); setPage(1); }}
+          className="border border-gray-300 rounded px-2 py-1 text-sm"
+        >
+          <option value="">All Categories</option>
+          {dataCategories?.map((cat) => (
+            <option key={cat.id} value={cat.id}>{cat.name}</option>
+          ))}
+        </select>
         <select
           value={filterMonth}
           onChange={(e) => { setFilterMonth(e.target.value); setPage(1); }}
@@ -247,9 +264,9 @@ const AddEditPackagesView = () => {
             <option key={y} value={y}>{y}</option>
           ))}
         </select>
-        {(filterMonth || filterYear) && (
+        {(filterCategory || filterMonth || filterYear) && (
           <button
-            onClick={() => { setFilterMonth(''); setFilterYear(''); setPage(1); }}
+            onClick={() => { setFilterCategory(''); setFilterMonth(''); setFilterYear(''); setPage(1); }}
             className="text-sm text-red-500 hover:text-red-700"
           >
             Reset
