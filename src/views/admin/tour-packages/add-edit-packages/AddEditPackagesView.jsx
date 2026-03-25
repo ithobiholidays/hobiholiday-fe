@@ -84,6 +84,16 @@ const AddEditPackagesView = () => {
       label: 'Date',
     },
     {
+      key: 'startDate',
+      label: 'Start Date',
+      render: (row) => row?.startDate || '-',
+    },
+    {
+      key: 'endDate',
+      label: 'End Date',
+      render: (row) => row?.endDate || '-',
+    },
+    {
       key: 'isActive',
       label: 'Status',
       render: (row) => (

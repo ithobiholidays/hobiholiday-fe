@@ -33,6 +33,8 @@ const schema = yup.object().shape({
   title: yup.string().required("Package Name is required"),
   theme: yup.string().required("Package Theme is required"),
   date: yup.string().required("Package Date is required"),
+  startDate: yup.string().nullable(),
+  endDate: yup.string().nullable(),
   discPrice: yup.number().required("Discounted Price is required"),
   price: yup.number().required("Price is required"),
   detail: yup.string().required("Package Detail is required"),
@@ -48,6 +50,8 @@ const defaultValues = {
   title: "",
   theme: "",
   date: "",
+  startDate: "",
+  endDate: "",
   detail: "",
   labelType: [],
   category: [],
@@ -108,6 +112,8 @@ const EditPackagesView = ({ params }) => {
       formData.append("categoryIds", data.category.join(", "));
       formData.append("label", data.labelType[0]);
       formData.append("date", data.date);
+      formData.append("startDate", data.startDate || "");
+      formData.append("endDate", data.endDate || "");
       formData.append("banner", data.banner);
       formData.append("itenerary", data.itenerary);
 
@@ -186,6 +192,16 @@ const EditPackagesView = ({ params }) => {
                   name="date"
                   label="Package Date"
                   placeholder={"Enter Package Date"}
+                />
+                <RHFInput
+                  name="startDate"
+                  label="Start Date"
+                  type="date"
+                />
+                <RHFInput
+                  name="endDate"
+                  label="End Date"
+                  type="date"
                 />
                 <RHFTextArea
                   name="detail"
