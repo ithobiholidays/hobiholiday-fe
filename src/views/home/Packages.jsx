@@ -7,6 +7,8 @@ import {
   FaChevronDown,
   FaChevronUp,
   FaWhatsapp,
+  FaCalendarAlt,
+  FaCalendar,
 } from "react-icons/fa";
 import { FiDownload, FiSearch } from "react-icons/fi";
 import {
@@ -336,45 +338,71 @@ const Packages = () => {
       <div className="xl:col-span-4 col-span-5 grid grid-cols-1 2xl:grid-cols-3 sm:grid-cols-2 lg:gap-6 md:gap-4 gap-2">
 
         {/* Search & Filter UI */}
-        <div className="col-span-full flex flex-wrap gap-2 mb-2">
-          <div className="flex items-center border border-gray-300 rounded px-3 py-1.5 flex-1 min-w-[200px] bg-white">
-            <FiSearch className="text-gray-400 mr-2 flex-shrink-0" />
-            <input
-              type="text"
-              placeholder="Cari paket tour..."
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              className="outline-none text-sm w-full"
-            />
+        <div className="col-span-full mb-4">
+          <div className="bg-[#004FC0] rounded-2xl px-4 py-3 shadow-lg">
+            <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
+
+              {/* Search input — full width di mobile, flex-1 di desktop */}
+              <div className="col-span-2 flex items-center sm:flex-1 bg-white rounded-xl px-3 py-2.5">
+                <FiSearch className="text-[#004FC0] mr-2 flex-shrink-0 text-base" />
+                <input
+                  type="text"
+                  placeholder="Cari nama paket tour..."
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
+                  className="outline-none text-sm w-full text-gray-700 placeholder-gray-400 bg-transparent"
+                />
+                {searchInput && (
+                  <button
+                    onClick={() => setSearchInput("")}
+                    className="text-gray-400 hover:text-gray-600 ml-1 flex-shrink-0 text-xs"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+
+              {/* Month filter — col 1 di mobile */}
+              <div className="col-span-1 flex items-center gap-1.5 bg-white rounded-xl px-3 py-2.5">
+                <FaCalendarAlt className="text-[#004FC0] flex-shrink-0 text-sm" />
+                <select
+                  value={filterMonth}
+                  onChange={(e) => { setFilterMonth(e.target.value); setPage(1); }}
+                  className="outline-none text-sm bg-transparent text-gray-700 cursor-pointer w-full"
+                >
+                  <option value="">Semua Bulan</option>
+                  {months.map((m) => (
+                    <option key={m.value} value={m.value}>{m.label}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Year filter — col 2 di mobile */}
+              <div className="col-span-1 flex items-center gap-1.5 bg-white rounded-xl px-3 py-2.5">
+                <FaCalendar className="text-[#004FC0] flex-shrink-0 text-sm" />
+                <select
+                  value={filterYear}
+                  onChange={(e) => { setFilterYear(e.target.value); setPage(1); }}
+                  className="outline-none text-sm bg-transparent text-gray-700 cursor-pointer w-full"
+                >
+                  <option value="">Semua Tahun</option>
+                  {years.map((y) => (
+                    <option key={y} value={y}>{y}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Reset button — full width di mobile */}
+              {(searchInput || filterMonth || filterYear) && (
+                <button
+                  onClick={resetFilters}
+                  className="col-span-2 flex items-center justify-center gap-1 text-sm text-white bg-red-500 hover:bg-red-600 px-4 py-2.5 rounded-xl transition-colors font-medium w-full sm:w-auto"
+                >
+                  ✕ Reset
+                </button>
+              )}
+            </div>
           </div>
-          <select
-            value={filterMonth}
-            onChange={(e) => { setFilterMonth(e.target.value); setPage(1); }}
-            className="border border-gray-300 rounded px-2 py-1.5 text-sm bg-white"
-          >
-            <option value="">Semua Bulan</option>
-            {months.map((m) => (
-              <option key={m.value} value={m.value}>{m.label}</option>
-            ))}
-          </select>
-          <select
-            value={filterYear}
-            onChange={(e) => { setFilterYear(e.target.value); setPage(1); }}
-            className="border border-gray-300 rounded px-2 py-1.5 text-sm bg-white"
-          >
-            <option value="">Semua Tahun</option>
-            {years.map((y) => (
-              <option key={y} value={y}>{y}</option>
-            ))}
-          </select>
-          {(searchInput || filterMonth || filterYear) && (
-            <button
-              onClick={resetFilters}
-              className="text-sm text-red-500 hover:text-red-700 px-2"
-            >
-              Reset
-            </button>
-          )}
         </div>
 
         {/* Loading / No Data / Product cards */}
