@@ -36,20 +36,20 @@ export default function RootLayout({ children }) {
           `}
         </Script>
 
-        {/* ✅ Google Tag (gtag.js) */}
+        {/* Google tag (gtag.js) — GA4 */}
         <Script
-          src="https://www.googletagmanager.com/gtag/js?id=AW-11485070277"
+          src="https://www.googletagmanager.com/gtag/js?id=G-RMS7G2TE5W"
           strategy="afterInteractive"
         />
-        <Script id="google-ads" strategy="afterInteractive">
+        <Script id="google-tag-gtag" strategy="afterInteractive">
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', 'AW-11485070277');
+            gtag('config', 'G-RMS7G2TE5W');
           `}
         </Script>
-        {/* Facebook Pixel base code */}
+        {/* Meta (Facebook) Pixel */}
         <Script
           id="facebook-pixel"
           strategy="afterInteractive"
@@ -63,7 +63,7 @@ export default function RootLayout({ children }) {
               t.src=v;s=b.getElementsByTagName(e)[0];
               s.parentNode.insertBefore(t,s)}(window, document,'script',
               'https://connect.facebook.net/en_US/fbevents.js');
-              fbq('init', '3634536713538208');
+              fbq('init', '1450986483178498');
               fbq('track', 'PageView');
             `,
           }}
@@ -109,6 +109,16 @@ export default function RootLayout({ children }) {
             width="0"
             style={{ display: 'none', visibility: 'hidden' }}
           ></iframe>
+        </noscript>
+        <noscript>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            height="1"
+            width="1"
+            style={{ display: 'none' }}
+            src="https://www.facebook.com/tr?id=1450986483178498&ev=PageView&noscript=1"
+            alt=""
+          />
         </noscript>
 
         {children}
