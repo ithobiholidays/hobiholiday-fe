@@ -163,7 +163,7 @@ const Footer = () => {
               Mon - Fri: 09.00 - 18.00 WIB
             </p>
             <p className="3xl:text-base sm:text-sm">
-              Saturday: 00.90 - 13.00 WIB
+              Saturday: 09.00 - 13.00 WIB
             </p>
 
             <h2 className="font-bold text-lg mt-4 xs:hidden xl:block 2xl:hidden">
