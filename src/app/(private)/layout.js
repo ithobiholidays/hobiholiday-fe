@@ -26,6 +26,7 @@ const menuItems = [
         label: "Add/Edit Packages",
         href: "/dashboard/tour-packages/add-edit-packages",
       },
+      { label: "Product Code", href: "/dashboard/tour-packages/product-code" },
     ],
   },
   {
