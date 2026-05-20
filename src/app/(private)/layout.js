@@ -26,7 +26,14 @@ const menuItems = [
         label: "Add/Edit Packages",
         href: "/dashboard/tour-packages/add-edit-packages",
       },
+    ],
+  },
+  {
+    label: "Cekat AI",
+    stateKey: "isCekatOpen",
+    links: [
       { label: "Product Code", href: "/dashboard/tour-packages/product-code" },
+      { label: "Category Endpoints", href: "/dashboard/cekat-ai/category-endpoints" }, 
     ],
   },
   {

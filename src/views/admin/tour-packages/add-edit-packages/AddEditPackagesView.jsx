@@ -239,6 +239,14 @@ const AddEditPackagesView = () => {
       render: (row) => row?.endDate || '-',
     },
     {
+      key: 'discPrice',
+      label: 'Sale Price',
+      render: (row) =>
+        row.discPrice
+          ? `Rp ${row.discPrice.toLocaleString('id-ID')}`
+          : '-',
+    },
+    {
       key: 'isActive',
       label: 'Status',
       render: (row) => (
