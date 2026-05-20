@@ -98,7 +98,7 @@ const ProductCodeMappingView = () => {
     };
 
     const hasActiveFilter =
-        filterCategory || filterMonth || filterYear ||
+        filterMonth || filterYear ||
         filterActive !== 'true' || filterSoldOut !== 'false' ||
         filterHasCode || filterInputted;
 
@@ -175,6 +175,33 @@ const ProductCodeMappingView = () => {
                 <Breadcrumbs paths={paths} />
             </div>
 
+            {/* Category Tabs */}
+            <div className="flex flex-wrap gap-2 mt-6">
+            <button
+                onClick={() => { setFilterCategory(''); setPage(1); }}
+                className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors border
+                ${filterCategory === ''
+                    ? 'bg-[#1E91CF] text-white border-[#1E91CF]'
+                    : 'bg-white text-gray-600 border-gray-300 hover:border-[#1E91CF] hover:text-[#1E91CF]'
+                }`}
+            >
+                Semua
+            </button>
+            {dataCategories?.map((cat) => (
+                <button
+                key={cat.id}
+                onClick={() => { setFilterCategory(cat.id); setPage(1); }}
+                className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors border
+                    ${filterCategory === cat.id
+                    ? 'bg-[#1E91CF] text-white border-[#1E91CF]'
+                    : 'bg-white text-gray-600 border-gray-300 hover:border-[#1E91CF] hover:text-[#1E91CF]'
+                    }`}
+                >
+                {cat.name}
+                </button>
+            ))}
+            </div>
+
             <div className="flex justify-between items-center mt-8">
                 <SearchBar onSearch={handleSearch} />
                 <button
@@ -209,13 +236,6 @@ const ProductCodeMappingView = () => {
                     <option value="">Semua Spreadsheet</option>
                     <option value="true">Sudah Diinput</option>
                     <option value="false">Belum Diinput</option>
-                </select>
-
-                <select value={filterCategory} onChange={(e) => { setFilterCategory(e.target.value); setPage(1); }} className="border border-gray-300 rounded px-2 py-1 text-sm">
-                    <option value="">Semua Kategori</option>
-                    {dataCategories?.map((cat) => (
-                        <option key={cat.id} value={cat.id}>{cat.name}</option>
-                    ))}
                 </select>
 
                 <select value={filterMonth} onChange={(e) => { setFilterMonth(e.target.value); setPage(1); }} className="border border-gray-300 rounded px-2 py-1 text-sm">
