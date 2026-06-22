@@ -25,7 +25,7 @@ export default function TourSchedule() {
               <div className="absolute -inset-2 sm:-inset-4 bg-gradient-to-r from-[#004FC0] to-[#FFA80F] rounded-2xl sm:rounded-3xl opacity-20 blur-xl sm:blur-2xl group-hover:opacity-30 transition-opacity duration-500"></div>
               <div className="relative overflow-hidden rounded-xl sm:rounded-2xl shadow-xl sm:shadow-2xl transform group-hover:scale-[1.02] transition-transform duration-500">
                 <Image
-                  src="/about.jpg"
+                  src="/about2.jpg"
                   className="object-cover w-full h-auto"
                   width={900}
                   height={600}
