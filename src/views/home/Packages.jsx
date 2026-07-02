@@ -26,6 +26,7 @@ import { PiShareFatFill } from "react-icons/pi";
 import { useSearchParams } from "next/navigation";
 import ShareComponent from "./ShareComponent";
 import { slugify, deslugify } from "@/utils/hooks/slugify";
+import LeadFormModal from "@/components/LeadFormModal";
 
 const SEMUA_DESTINASI = { id: null, name: "Semua Destinasi" };
 
@@ -245,6 +246,8 @@ const Packages = () => {
   // List categories untuk sidebar: Semua Destinasi + dari DB
   const allCategoryList = dataCategory ? [SEMUA_DESTINASI, ...dataCategory] : [];
 
+  const [leadModal, setLeadModal] = useState({ open: false, product: null });
+
   return (
     <div
       className="grid grid-cols-5 lg:px-12 px-6 items-start gap-8"
@@ -307,11 +310,10 @@ const Packages = () => {
                   <li
                     key={category?.id ?? "semua"}
                     className={`font-semibold border border-[#FFA80F] py-2 px-4 cursor-pointer transition flex-shrink-0 mb-1
-                    ${
-                      selectedCategory?.id === category?.id
+                    ${selectedCategory?.id === category?.id
                         ? "bg-yellow-500 text-white"
                         : "text-blue-700 hover:bg-yellow-500 hover:text-white"
-                    }`}
+                      }`}
                     onClick={() => {
                       setSelectedCategory(category);
                       setPage(1);
@@ -426,9 +428,8 @@ const Packages = () => {
                   src={`${product?.bannerHost}${product?.banner}`}
                   width={325}
                   height={325}
-                  className={`w-full h-auto aspect-square object-cover md:aspect-[4/3] ${
-                    product?.isSoldOut ? "grayscale" : "grayscale-0"
-                  }`}
+                  className={`w-full h-auto aspect-square object-cover md:aspect-[4/3] ${product?.isSoldOut ? "grayscale" : "grayscale-0"
+                    }`}
                   alt={product?.title}
                 />
 
@@ -520,20 +521,18 @@ const Packages = () => {
                   </p>
                 </button>
 
-                <a
-                  href={`https://wa.me/6282310702343?text=${encodeURIComponent(
-                    `Halo, saya tertarik dengan paket tour:\n\n${product?.title}\nTanggal: ${product?.date}\nHarga: ${convertPrice(product?.discPrice)} Juta/pax\n\nLink: ${window.location.origin}/tour-schedule/category/${slugify(getCategoryName(product))}/${createTripSlug(product.title, product.date)}`
-                  )}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setLeadModal({ open: true, product });
+                  }}
                   className="bg-[#FFA80F] py-1.5 px-2 rounded-full flex gap-1 items-center hover:opacity-80"
-                  onClick={(e) => e.stopPropagation()}
                 >
                   <FaWhatsapp className="text-white shadow-lg text-xs hd:text-xl 3xl:text-base font-semibold" />
                   <p className="text-white font-semibold hd:text-lg 3xl:text-xs xs:text-[10px]">
                     TOUR CONSULTANT
                   </p>
-                </a>
+                </button>
               </div>
             </div>
           ))
@@ -553,8 +552,21 @@ const Packages = () => {
           </div>
         )}
       </div>
+      <LeadFormModal
+        isOpen={leadModal.open}
+        onClose={() => setLeadModal({ open: false, product: null })}
+        productTitle={leadModal.product?.title || ""}
+        categoryName={getCategoryName(leadModal.product)}
+        productUrl={
+          leadModal.product
+            ? `${window.location.origin}/tour-schedule/category/${slugify(getCategoryName(leadModal.product))}/${createTripSlug(leadModal.product.title, leadModal.product.date)}`
+            : ""
+        }
+      />
     </div>
   );
 };
+
+
 
 export default Packages;

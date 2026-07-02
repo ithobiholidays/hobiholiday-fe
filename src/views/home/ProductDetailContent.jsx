@@ -13,8 +13,10 @@ import { convertPrice, downloadFileFromUrl, formatIDR } from "@/utils/common";
 import DOMPurify from "dompurify";
 import { slugify } from "@/utils/hooks/slugify";
 import SafeHTMLContent from "@/components/SafeHTMLContent";
+import LeadFormModal from "@/components/LeadFormModal";
 
 const TripDetailContent = () => {
+  const [leadModalOpen, setLeadModalOpen] = useState(false);
   const params = useParams();
   const router = useRouter();
   const [tripData, setTripData] = useState(null);
@@ -170,9 +172,8 @@ const TripDetailContent = () => {
                     height={800}
                     alt={tripData.title}
                     priority
-                    className={`w-full object-cover h-[280px] xs:h-[320px] sm:h-[400px] md:h-[450px] lg:h-[520px] transition-transform duration-700 group-hover:scale-110 ${
-                      tripData?.isSoldOut ? "grayscale" : ""
-                    }`}
+                    className={`w-full object-cover h-[280px] xs:h-[320px] sm:h-[400px] md:h-[450px] lg:h-[520px] transition-transform duration-700 group-hover:scale-110 ${tripData?.isSoldOut ? "grayscale" : ""
+                      }`}
                   />
 
                   {/* Gradient Overlay */}
@@ -356,13 +357,9 @@ const TripDetailContent = () => {
 
                 {/* Action Buttons */}
                 <div className="space-y-3 xl:space-y-4">
-                  <a
-                    href={`https://wa.me/6282310702343?text=${encodeURIComponent(
-                      `Halo, Saya tertarik dengan paket travel ${tripData?.title}. Bisa dijelaskan detailnya?\n\n${window.location.href}`
-                    )}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block bg-gradient-to-r from-green-500 to-green-600 text-white py-4 xl:py-5 px-6 rounded-xl hover:from-green-600 hover:to-green-700 transition-all shadow-lg hover:shadow-2xl transform hover:-translate-y-1 border-2 border-green-400/30"
+                  <button
+                    onClick={() => setLeadModalOpen(true)}
+                    className="block w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-4 xl:py-5 px-6 rounded-xl hover:from-green-600 hover:to-green-700 transition-all shadow-lg hover:shadow-2xl transform hover:-translate-y-1 border-2 border-green-400/30"
                   >
                     <div className="flex items-center justify-center gap-3 group">
                       <FaWhatsapp className="text-2xl xl:text-3xl group-hover:scale-110 group-hover:rotate-12 transition-all duration-300" />
@@ -371,7 +368,7 @@ const TripDetailContent = () => {
                         <div className="text-xs xl:text-sm text-green-100">Chat via WhatsApp</div>
                       </div>
                     </div>
-                  </a>
+                  </button>
 
                   <button
                     onClick={() => {
@@ -381,7 +378,7 @@ const TripDetailContent = () => {
                         .replace(/[\/\\:*?"<>|]/g, '_') // Ganti karakter ilegal dengan underscore
                         .replace(/\s+/g, '_') // Ganti spasi dengan underscore
                         .trim();
-                      
+
                       downloadFileFromUrl(
                         `${tripData?.iteneraryHost}${tripData?.itenerary}`,
                         cleanFileName
@@ -406,9 +403,8 @@ const TripDetailContent = () => {
 
       {/* Floating Button - Mobile Only */}
       <div
-        className={`lg:hidden fixed bottom-0 left-0 right-0 bg-white shadow-2xl border-t-2 border-gray-200 transition-all duration-300 z-50 ${
-          showFloatingButton ? "translate-y-0" : "translate-y-full"
-        }`}
+        className={`lg:hidden fixed bottom-0 left-0 right-0 bg-white shadow-2xl border-t-2 border-gray-200 transition-all duration-300 z-50 ${showFloatingButton ? "translate-y-0" : "translate-y-full"
+          }`}
       >
         <div className="px-3 sm:px-4 py-3">
           {/* Price Info */}
@@ -444,7 +440,7 @@ const TripDetailContent = () => {
                   .replace(/[\/\\:*?"<>|]/g, '_') // Ganti karakter ilegal dengan underscore
                   .replace(/\s+/g, '_') // Ganti spasi dengan underscore
                   .trim();
-                
+
                 downloadFileFromUrl(
                   `${tripData?.iteneraryHost}${tripData?.itenerary}`,
                   cleanFileName
@@ -455,17 +451,13 @@ const TripDetailContent = () => {
               <FiDownload className="text-base sm:text-lg flex-shrink-0" />
               <span>Itinerary</span>
             </button>
-            <a
-              href={`https://wa.me/6282310702343?text=${encodeURIComponent(
-                `Halo, Saya tertarik dengan paket travel ${tripData?.title}. Bisa dijelaskan detailnya?\n\n${window.location.href}`
-              )}`}
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              onClick={() => setLeadModalOpen(true)}
               className="bg-gradient-to-r from-green-500 to-green-600 text-white py-2.5 sm:py-3 px-3 sm:px-4 rounded-lg sm:rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 active:scale-95 transition-all font-bold text-xs sm:text-sm"
             >
               <FaWhatsapp className="text-lg sm:text-xl flex-shrink-0" />
               <span>Konsultasi</span>
-            </a>
+            </button>
           </div>
         </div>
       </div>
@@ -504,8 +496,18 @@ const TripDetailContent = () => {
           }
         }
       `}</style>
+
+      <LeadFormModal
+        isOpen={leadModalOpen}
+        onClose={() => setLeadModalOpen(false)}
+        productTitle={tripData?.title || ""}
+        categoryName={categoryData?.name || ""}
+        productUrl={typeof window !== "undefined" ? window.location.href : ""}
+      />
     </div>
   );
 };
+
+
 
 export default TripDetailContent;

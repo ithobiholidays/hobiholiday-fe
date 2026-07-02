@@ -65,6 +65,10 @@ const menuItems = [
   //   ],
   // },
   {
+    label: "Customer Leads",
+    href: "/dashboard/customer-leads",
+  },
+  {
     label: "CV",
     href: "/dashboard/cv",
   },
