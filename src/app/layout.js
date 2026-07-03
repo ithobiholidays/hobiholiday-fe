@@ -49,6 +49,20 @@ export default function RootLayout({ children }) {
             gtag('config', 'G-RMS7G2TE5W');
           `}
         </Script>
+
+        {/* Google Ads (gtag.js) */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=AW-11485070277"
+          strategy="afterInteractive"
+        />
+        <Script id="google-ads" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'AW-11485070277');
+          `}
+        </Script>
         {/* Meta (Facebook) Pixel */}
         <Script
           id="facebook-pixel"

@@ -71,6 +71,15 @@ const LeadFormModal = ({
         productTitle,
       });
 
+      // Google Ads conversion tracking
+      if (typeof window !== "undefined" && typeof window.gtag === "function") {
+        window.gtag("event", "conversion", {
+          send_to: "AW-11485070277/WOKICKb14MkcEMWHweQq",
+          value: parseInt(pax, 10) || 1,
+          currency: "IDR",
+        });
+      }
+
       const waMessage = encodeURIComponent(
         `Halo, saya tertarik dengan paket tour:\n\n` +
           `${productTitle}\n` +
