@@ -49,7 +49,7 @@ const YoutubeCarousel = () => {
   return (
     <div className="bg-[#004FC0] py-24 relative" id="testimony-section">
       <h2 className="text-white text-center 2xl:text-4xl xl:text-3xl md:text-2xl text-xl font-bold mb-12">
-        Apa Kata Mereka Tentang Hobi Holidays?
+        Apa Kata Mereka Tentang Hobiholidays?
       </h2>
 
       <div className="flex items-center lg:gap-8 justify-center">

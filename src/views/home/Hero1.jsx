@@ -94,7 +94,7 @@ const HeroSlider = () => {
 
           {/* CTA Button */}
           <div className="animate-slide-up-delay-2">
-            <Link href="/tour-schedule/category/1">
+            <Link href="/tour-schedule/category/all">
               <button className="group relative px-5 py-2 sm:px-7 sm:py-2.5 md:px-9 md:py-3 lg:px-10 lg:py-3.5 bg-[#004fc0] text-white font-semibold text-xs sm:text-sm md:text-base lg:text-lg rounded-full overflow-hidden transition-all duration-300 hover:bg-[#003a8f] hover:shadow-2xl hover:scale-105">
                 <span className="relative z-10">Mulai Petualangan</span>
                 <div className="absolute inset-0 bg-gradient-to-r from-[#004fc0] to-[#0066ff] transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>

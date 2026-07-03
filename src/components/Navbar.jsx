@@ -164,7 +164,7 @@ function Navbar() {
         </li>
       ),
     },
-    { label: "Tour Schedule", href: "/tour-schedule/category/1" },
+    { label: "Tour Schedule", href: "/tour-schedule/category/all" },
     { label: "Private Trip", href: "/private-trip" },
     { label: "Mastervisa", href: "/mastervisa", exception: true },
     { label: "Contact", href: "/contact" },

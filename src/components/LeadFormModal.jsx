@@ -73,12 +73,12 @@ const LeadFormModal = ({
 
       const waMessage = encodeURIComponent(
         `Halo, saya tertarik dengan paket tour:\n\n` +
-          `📦 ${productTitle}\n` +
-          `📂 Kategori: ${categoryName}\n` +
-          `👤 Nama: ${name.trim()}\n` +
-          `📱 No. HP: ${phone.trim()}\n` +
-          `👥 Jumlah Pax: ${pax}\n\n` +
-          `🔗 ${productUrl}`
+          `${productTitle}\n` +
+          `Kategori: ${categoryName}\n` +
+          `Nama: ${name.trim()}\n` +
+          `No. HP: ${phone.trim()}\n` +
+          `Jumlah Pax: ${pax}\n\n` +
+          `${productUrl}`
       );
 
       window.open(`https://wa.me/${WA_NUMBER}?text=${waMessage}`, "_blank");

@@ -7,8 +7,6 @@ import {
   FaChevronDown,
   FaChevronUp,
   FaWhatsapp,
-  FaCalendarAlt,
-  FaCalendar,
 } from "react-icons/fa";
 import { FiDownload, FiSearch } from "react-icons/fi";
 import {
@@ -18,6 +16,20 @@ import {
   PopoverContent,
   PopoverTrigger,
   Skeleton,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  Button,
+  Checkbox,
+  Drawer,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerHeader,
+  DrawerBody,
+  DrawerFooter,
+  DrawerCloseButton,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { useGetData, usePostData } from "@/utils/api";
 import Image from "next/image";
@@ -56,8 +68,8 @@ const Packages = () => {
   // Search & filter states
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
-  const [filterMonth, setFilterMonth] = useState("");
-  const [filterYear, setFilterYear] = useState("");
+  const [filterMonths, setFilterMonths] = useState([]);
+  const [filterYears, setFilterYears] = useState([]);
 
   useEffect(() => {
     if (window.innerWidth < 1100) {
@@ -105,322 +117,646 @@ const Packages = () => {
     return selectedCategory?.name || "tour";
   };
 
-  const onLoadMore = async () => {
-    const nextPage = page + 1;
-    const body = { p: nextPage, limit: 9 };
-
-    if (isSearchMode) {
+    // Helper: bangun body filter dari semua filter aktif
+    const buildFilterBody = (pageNum = 1) => {
+      const body = { p: pageNum, limit: 9 };
+      if (selectedCategory?.id) {
+        body.categoryIds = [selectedCategory.id];
+      } else if (!search && filterMonths.length === 0 && filterYears.length === 0) {
+        // Semua Destinasi tanpa filter lain → kirim semua kategori
+        body.categoryIds = (dataCategory || []).map((c) => c.id);
+      }
       if (search) body.search = search;
-      if (filterMonth) body.month = filterMonth;
-      if (filterYear) body.year = filterYear;
-    } else {
-      body.categoryIds = [selectedCategory?.id];
-    }
-
-    const responseProduct = await postData("/product/filtered-limit?s=1", body);
-    setPage(nextPage);
-    setProductData((prev) => [...prev, ...responseProduct?.data]);
-  };
-
-  const handleCardClick = (product) => {
-    const tripSlug = createTripSlug(product.title, product.date);
-    const categoryName = getCategoryName(product);
-    router.push(`/tour-schedule/category/${slugify(categoryName)}/${tripSlug}`);
-  };
-
-  // Fetch awal: ambil categories, set selected dari URL params
-  useEffect(() => {
-    const fetchInitialData = async () => {
-      try {
-        const responseCategory = await getData("/category/all?s=1");
-        if (responseCategory?.data?.length) {
-          const allCategories = responseCategory.data;
-          const categoryIdFromParams = deslugify(params?.cat);
-
-          let selected = allCategories[0];
-
-          if (categoryIdFromParams && categoryIdFromParams !== "1") {
-            const matchedCategory = allCategories.find(
-              (cat) =>
-                cat.name.toLowerCase() ===
-                decodeURIComponent(categoryIdFromParams).toLowerCase()
-            );
-            if (matchedCategory) selected = matchedCategory;
-          }
-
-          if (params.cat === "1") {
-            router.push("/tour-schedule/category/" + slugify(selected.name));
-          }
-
-          setSelectedCategory(selected);
-
-          if (categoryIdFromParams) {
-            const categorySection = document.getElementById("category-section");
-            if (categorySection) {
-              const yOffset = -120;
-              const y =
-                categorySection.getBoundingClientRect().top +
-                window.pageYOffset +
-                yOffset;
-              window.scrollTo({ top: y, behavior: "smooth" });
+      if (filterMonths.length) body.month = filterMonths;
+      if (filterYears.length) body.year = filterYears;
+      return body;
+    };
+  
+    const onLoadMore = async () => {
+      const nextPage = page + 1;
+      const responseProduct = await postData(
+        "/product/filtered-limit?s=1",
+        buildFilterBody(nextPage)
+      );
+      setPage(nextPage);
+      setProductData((prev) => [...prev, ...(responseProduct?.data || [])]);
+    };
+  
+    const handleCardClick = (product) => {
+      const tripSlug = createTripSlug(product.title, product.date);
+      const categoryName = getCategoryName(product);
+      router.push(`/tour-schedule/category/${slugify(categoryName)}/${tripSlug}`);
+    };
+  
+    // Fetch awal: ambil categories, set selected dari URL params + query
+    useEffect(() => {
+      const fetchInitialData = async () => {
+        try {
+          const responseCategory = await getData("/category/all?s=1");
+          if (responseCategory?.data?.length) {
+            const allCategories = responseCategory.data;
+            const rawCat = params?.cat;
+            const categoryIdFromParams = deslugify(rawCat);
+  
+            let selected = allCategories[0];
+  
+            if (rawCat) {
+              // Di tour-schedule selalu ada segmen kategori di path
+              if (rawCat === "1" || rawCat === "semua" || rawCat === "all") {
+                selected = SEMUA_DESTINASI; // default → Semua Destinasi
+              } else {
+                const matchedCategory = allCategories.find(
+                  (cat) =>
+                    cat.name.toLowerCase() ===
+                    decodeURIComponent(categoryIdFromParams).toLowerCase()
+                );
+                selected = matchedCategory || SEMUA_DESTINASI;
+              }
+            }
+  
+            // Baca filter dari query URL (untuk deep-link iklan / share)
+            const qSearch = searchParams.get("q");
+            const qBulan = searchParams.get("bulan");
+            const qTahun = searchParams.get("tahun");
+            if (qSearch) {
+              setSearchInput(qSearch);
+              setSearch(qSearch);
+            }
+            if (qBulan) setFilterMonths(qBulan.split(",").filter(Boolean));
+            if (qTahun) setFilterYears(qTahun.split(",").filter(Boolean));
+  
+            setSelectedCategory(selected);
+  
+            if (categoryIdFromParams) {
+              const categorySection = document.getElementById("category-section");
+              if (categorySection) {
+                const yOffset = -120;
+                const y =
+                  categorySection.getBoundingClientRect().top +
+                  window.pageYOffset +
+                  yOffset;
+                window.scrollTo({ top: y, behavior: "smooth" });
+              }
             }
           }
+        } catch (error) {
+          console.error("Error fetching initial data", error);
         }
-      } catch (error) {
-        console.error("Error fetching initial data", error);
-      }
-    };
+      };
+  
+      fetchInitialData();
+    }, []);
+  
+    // Fetch produk setiap kali filter apa pun berubah (kombinasi)
+    useEffect(() => {
+      if (selectedCategory === "") return; // belum init
+  
+      const fetchProducts = async () => {
+        const body = buildFilterBody(1);
+        const noFilter =
+          (!body.categoryIds || body.categoryIds.length === 0) &&
+          !body.search &&
+          !body.month &&
+          !body.year;
 
-    fetchInitialData();
-  }, []);
-
-  // Fetch produk saat selectedCategory berubah
-  useEffect(() => {
-    const fetchProductsByCategory = async () => {
-      if (!selectedCategory) return;
-
-      try {
-        const body = { p: 1, limit: 9 };
-
-        if (isSearchMode) {
-          if (search) body.search = search;
-          if (filterMonth) body.month = filterMonth;
-          if (filterYear) body.year = filterYear;
-        } else {
-          body.categoryIds = [selectedCategory?.id];
-        }
-
-        const responseProduct = await postData("/product/filtered-limit?s=1", body);
-        setProductData(responseProduct?.data || []);
-        setPage(1);
-
-        if (window.innerWidth >= 1100) {
-          setIsOpenDropdown(false);
-        }
-      } catch (error) {
-        console.error("Error fetching products", error);
-      }
-    };
-
-    fetchProductsByCategory();
-  }, [selectedCategory]);
-
-  // Fetch produk saat search/filter berubah (hanya saat mode Semua Destinasi)
-  useEffect(() => {
-    if (!selectedCategory) return;
-
-    const fetchFiltered = async () => {
-      try {
-        const body = { p: 1, limit: 9 };
-
-        if (search || filterMonth || filterYear) {
-          // Auto-pindah ke Semua Destinasi
-          setSelectedCategory(SEMUA_DESTINASI);
-          if (search) body.search = search;
-          if (filterMonth) body.month = filterMonth;
-          if (filterYear) body.year = filterYear;
-        } else {
-          // Filter dikosongkan → balik ke category yang terakhir dipilih
-          // (akan ditangani oleh useEffect selectedCategory di atas)
+        // Tidak ada filter sama sekali (mis. kategori belum termuat) → kosongkan
+        if (noFilter) {
+          setProductData([]);
+          setPage(1);
           return;
         }
+        try {
+          const responseProduct = await postData(
+            "/product/filtered-limit?s=1",
+            body
+          );
+          setProductData(responseProduct?.data || []);
+          setPage(1);
+          if (window.innerWidth >= 1100) setIsOpenDropdown(false);
+        } catch (error) {
+          console.error("Error fetching products", error);
+        }
+      };
+  
+      fetchProducts();
+    }, [selectedCategory, search, filterMonths, filterYears, dataCategory]);
+  
+    // Sinkron kategori (path) + filter (query) ke URL
+    useEffect(() => {
+      if (selectedCategory === "") return;
+      const q = new URLSearchParams();
+      if (search) q.set("q", search);
+      if (filterMonths.length) q.set("bulan", filterMonths.join(","));
+      if (filterYears.length) q.set("tahun", filterYears.join(","));
+      const qs = q.toString();
 
-        const responseProduct = await postData("/product/filtered-limit?s=1", body);
-        setProductData(responseProduct?.data || []);
-        setPage(1);
-      } catch (error) {
-        console.error("Error fetching filtered products", error);
+      // Di tour-schedule kategori ikut di path (all / nama-slug)
+      let base = window.location.pathname;
+      if (path.includes("/tour-schedule")) {
+        base =
+          "/tour-schedule/category/" +
+          (selectedCategory?.id == null
+            ? "all"
+            : slugify(selectedCategory.name));
       }
+      window.history.replaceState(null, "", qs ? `${base}?${qs}` : base);
+    }, [selectedCategory, search, filterMonths, filterYears, path]);
+  
+    const resetFilters = () => {
+      setSearchInput("");
+      setSearch("");
+      setFilterMonths([]);
+      setFilterYears([]);
     };
 
-    fetchFiltered();
-  }, [search, filterMonth, filterYear]);
+    const toggleMonth = (val) => {
+      setFilterMonths((prev) =>
+        prev.includes(val) ? prev.filter((v) => v !== val) : [...prev, val]
+      );
+      setPage(1);
+    };
 
-  const resetFilters = () => {
-    setSearchInput("");
-    setSearch("");
-    setFilterMonth("");
-    setFilterYear("");
-  };
+    const toggleYear = (val) => {
+      setFilterYears((prev) =>
+        prev.includes(val) ? prev.filter((v) => v !== val) : [...prev, val]
+      );
+      setPage(1);
+    };
 
-  // List categories untuk sidebar: Semua Destinasi + dari DB
-  const allCategoryList = dataCategory ? [SEMUA_DESTINASI, ...dataCategory] : [];
+    // List categories: Semua Destinasi + dari DB
+    const allCategoryList = dataCategory ? [SEMUA_DESTINASI, ...dataCategory] : [];
 
-  const [leadModal, setLeadModal] = useState({ open: false, product: null });
+    // Label tombol filter (ringkas jika lebih dari 1)
+    const monthBtnLabel =
+      filterMonths.length === 0
+        ? "Bulan"
+        : filterMonths.length === 1
+        ? months.find((m) => m.value === filterMonths[0])?.label
+        : `${filterMonths.length} Bulan`;
+    const yearBtnLabel =
+      filterYears.length === 0
+        ? "Tahun"
+        : filterYears.length === 1
+        ? filterYears[0]
+        : `${filterYears.length} Tahun`;
+  
+    const [leadModal, setLeadModal] = useState({ open: false, product: null });
 
-  return (
-    <div
-      className="grid grid-cols-5 lg:px-12 px-6 items-start gap-8"
-      id="category-section"
-    >
-      {loadingCategory ? (
-        <Skeleton height="300" className="col-span-5" />
-      ) : (
-        <>
-          {/* Mobile: Dropdown category */}
-          <div className="w-full font-sans border border-orange-500 rounded overflow-hidden xl:hidden col-span-5">
-            <div
-              className="bg-yellow-500 text-white px-4 py-3 cursor-pointer flex items-center justify-between w-full"
-              onClick={() => setIsOpenDropdown(!isOpenDropdown)}
-            >
-              <div className="flex flex-col">
-                <p className="font-bold text-lg">{selectedCategory?.name}</p>
-                {!isOpenDropdown && (
-                  <p className="text-[10px] text-white opacity-80 -mt-1">
-                    Klik untuk pilih Destinasi lain
-                  </p>
-                )}
-              </div>
-              {isOpenDropdown ? (
-                <FaChevronUp className="ml-2 w-5 h-5" />
-              ) : (
-                <FaChevronDown className="ml-2 w-5 h-5" />
-              )}
-            </div>
+    // Drawer filter untuk mobile (destinasi & waktu terpisah)
+    const {
+      isOpen: isDestOpen,
+      onOpen: onDestOpen,
+      onClose: onDestClose,
+    } = useDisclosure();
+    const {
+      isOpen: isWaktuOpen,
+      onOpen: onWaktuOpen,
+      onClose: onWaktuClose,
+    } = useDisclosure();
 
-            {isOpenDropdown && (
-              <div className="bg-white max-h-64 overflow-y-auto">
-                {allCategoryList?.map((category, index) => (
-                  <div
-                    key={category?.id ?? "semua"}
-                    onClick={() => {
-                      setSelectedCategory(category);
-                      setPage(1);
-                      if (category.id !== null) resetFilters();
-                    }}
-                    className="px-4 py-2 text-blue-700 hover:bg-orange-100 cursor-pointer"
-                  >
-                    {category?.name}
-                  </div>
-                ))}
-                <div className="sticky bottom-0 bg-white text-center py-1 pointer-events-none">
-                  <p className="text-[10px] text-gray-400">
-                    Scroll untuk lihat Destinasi lain
-                  </p>
-                </div>
-              </div>
+    // Jumlah pilihan waktu aktif (untuk badge tombol di mobile)
+    const waktuCount = filterMonths.length + filterYears.length;
+
+    return (
+      <div className="lg:px-12 px-6" id="category-section">
+        {/* ===== MOBILE: bar sticky (search + tombol Filter) ===== */}
+        <div className="xl:hidden sticky top-0 z-30 -mx-6 lg:-mx-12 px-6 lg:px-12 py-3 mb-4 bg-white/95 backdrop-blur border-b border-gray-100">
+          {/* Search full width */}
+          <div className="flex items-center min-w-0 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 mb-2 transition focus-within:border-[#004FC0] focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-100">
+            <FiSearch className="text-[#004FC0] mr-2 flex-shrink-0" />
+            <input
+              type="text"
+              placeholder="Cari nama paket tour..."
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              className="outline-none text-sm w-full text-gray-700 placeholder-gray-400 bg-transparent"
+            />
+            {searchInput && (
+              <button
+                onClick={() => setSearchInput("")}
+                className="text-gray-400 hover:text-gray-600 ml-1 text-xs flex-shrink-0"
+              >
+                ✕
+              </button>
             )}
           </div>
 
-          {/* Desktop: Sidebar category */}
-          <div className="xl:col-span-1 hidden xl:block bg-white rounded-lg xl:mb-0">
-            <div className="overflow-x-auto whitespace-nowrap lg:whitespace-normal">
-              <ul className="flex xl:block gap-4">
-                {allCategoryList?.map((category, index) => (
-                  <li
-                    key={category?.id ?? "semua"}
-                    className={`font-semibold border border-[#FFA80F] py-2 px-4 cursor-pointer transition flex-shrink-0 mb-1
-                    ${selectedCategory?.id === category?.id
-                        ? "bg-yellow-500 text-white"
-                        : "text-blue-700 hover:bg-yellow-500 hover:text-white"
-                      }`}
-                    onClick={() => {
-                      setSelectedCategory(category);
-                      setPage(1);
-                      if (category.id !== null) {
-                        resetFilters();
-                        if (path.includes("/tour-schedule")) {
-                          router.push(
-                            "/tour-schedule/category/" + slugify(category.name)
-                          );
-                        }
-                      }
-                    }}
-                  >
-                    {category?.name}
-                  </li>
-                ))}
-              </ul>
+          {/* Tombol Destinasi (kiri) + Bulan & Tahun (kanan) */}
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-1 whitespace-nowrap">
+                Pilih Destinasi
+              </p>
+              <button
+                onClick={onDestOpen}
+                className={`w-full flex items-center justify-between gap-1.5 px-3 py-2.5 rounded-xl border text-sm font-medium transition ${
+                  selectedCategory?.id
+                    ? "border-[#FFA80F] text-[#004FC0] bg-orange-50"
+                    : "border-gray-300 text-gray-700 bg-white"
+                }`}
+              >
+                <span className="truncate">
+                  {selectedCategory?.id ? selectedCategory.name : "Destinasi"}
+                </span>
+                <FaChevronDown className="flex-shrink-0 text-gray-400" />
+              </button>
             </div>
-          </div>
-        </>
-      )}
-
-      {/* Kolom produk */}
-      <div className="xl:col-span-4 col-span-5 grid grid-cols-1 2xl:grid-cols-3 sm:grid-cols-2 lg:gap-6 md:gap-4 gap-2">
-
-        {/* Search & Filter UI */}
-        <div className="col-span-full mb-4">
-          <div className="bg-[#004FC0] rounded-2xl px-4 py-3 shadow-lg">
-            <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
-
-              {/* Search input — full width di mobile, flex-1 di desktop */}
-              <div className="col-span-2 flex items-center sm:flex-1 bg-white rounded-xl px-3 py-2.5">
-                <FiSearch className="text-[#004FC0] mr-2 flex-shrink-0 text-base" />
-                <input
-                  type="text"
-                  placeholder="Cari nama paket tour..."
-                  value={searchInput}
-                  onChange={(e) => setSearchInput(e.target.value)}
-                  className="outline-none text-sm w-full text-gray-700 placeholder-gray-400 bg-transparent"
-                />
-                {searchInput && (
-                  <button
-                    onClick={() => setSearchInput("")}
-                    className="text-gray-400 hover:text-gray-600 ml-1 flex-shrink-0 text-xs"
-                  >
-                    ✕
-                  </button>
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-1 whitespace-nowrap">
+                Pilih Waktu
+              </p>
+              <button
+                onClick={onWaktuOpen}
+                className={`w-full relative flex items-center justify-between gap-1.5 px-3 py-2.5 rounded-xl border text-sm font-medium transition ${
+                  waktuCount > 0
+                    ? "border-[#FFA80F] text-[#004FC0] bg-orange-50"
+                    : "border-gray-300 text-gray-700 bg-white"
+                }`}
+              >
+                <span className="truncate">Bulan & Tahun</span>
+                {waktuCount > 0 ? (
+                  <span className="flex-shrink-0 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold text-white bg-[#FFA80F] rounded-full">
+                    {waktuCount}
+                  </span>
+                ) : (
+                  <FaChevronDown className="flex-shrink-0 text-gray-400" />
                 )}
-              </div>
-
-              {/* Month filter — col 1 di mobile */}
-              <div className="col-span-1 flex items-center gap-1.5 bg-white rounded-xl px-3 py-2.5">
-                <FaCalendarAlt className="text-[#004FC0] flex-shrink-0 text-sm" />
-                <select
-                  value={filterMonth}
-                  onChange={(e) => { setFilterMonth(e.target.value); setPage(1); }}
-                  className="outline-none text-sm bg-transparent text-gray-700 cursor-pointer w-full"
-                >
-                  <option value="">Semua Bulan</option>
-                  {months.map((m) => (
-                    <option key={m.value} value={m.value}>{m.label}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Year filter — col 2 di mobile */}
-              <div className="col-span-1 flex items-center gap-1.5 bg-white rounded-xl px-3 py-2.5">
-                <FaCalendar className="text-[#004FC0] flex-shrink-0 text-sm" />
-                <select
-                  value={filterYear}
-                  onChange={(e) => { setFilterYear(e.target.value); setPage(1); }}
-                  className="outline-none text-sm bg-transparent text-gray-700 cursor-pointer w-full"
-                >
-                  <option value="">Semua Tahun</option>
-                  {years.map((y) => (
-                    <option key={y} value={y}>{y}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Reset button — full width di mobile */}
-              {(searchInput || filterMonth || filterYear) && (
-                <button
-                  onClick={resetFilters}
-                  className="col-span-2 flex items-center justify-center gap-1 text-sm text-white bg-red-500 hover:bg-red-600 px-4 py-2.5 rounded-xl transition-colors font-medium w-full sm:w-auto"
-                >
-                  ✕ Reset
-                </button>
-              )}
+              </button>
             </div>
           </div>
         </div>
 
-        {/* Loading / No Data / Product cards */}
-        {loadingCategory || loadingProduct ? (
-          <>
-            <Skeleton height="300" />
-            <Skeleton height="300" />
-            <Skeleton height="300" />
-          </>
-        ) : productData?.length === 0 ? (
-          <div className="text-lg">No Data</div>
-        ) : (
-          productData?.map((product, index) => (
-            <div
-              key={index}
-              className="md:p-3 p-1 border-2 rounded-lg relative transition-transform duration-300 hover:cursor-pointer hover:shadow-xl bg-slate-50"
+        {/* ===== BODY: Rail filter (kiri) + Grid produk (kanan) ===== */}
+        <div className="flex flex-col xl:flex-row items-start gap-6 lg:gap-8">
+          {/* ===== LEFT RAIL (desktop): search + waktu + kategori ===== */}
+          <div className="hidden xl:block xl:w-72 xl:flex-shrink-0 bg-white rounded-2xl shadow-lg border border-gray-100 p-4 sm:p-5">
+          {/* Search */}
+          <div className="flex items-center bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 mb-5 transition focus-within:border-[#004FC0] focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-100">
+            <FiSearch className="text-[#004FC0] mr-2 flex-shrink-0" />
+            <input
+              type="text"
+              placeholder="Cari nama paket tour..."
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              className="outline-none text-sm w-full text-gray-700 placeholder-gray-400 bg-transparent"
+            />
+            {searchInput && (
+              <button
+                onClick={() => setSearchInput("")}
+                className="text-gray-400 hover:text-gray-600 ml-1 text-xs"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+  
+          {/* Kategori dipindahkan ke sidebar di bawah */}
+  
+          {/* Bulan + Tahun + Reset */}
+          <p className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3">
+            Waktu Keberangkatan
+          </p>
+          <div className="grid grid-cols-2 gap-2 items-start">
+            <Menu closeOnSelect={false}>
+              <MenuButton
+                as={Button}
+                rightIcon={<FaChevronDown />}
+                variant="outline"
+                size="sm"
+                w="full"
+                className={`!border-gray-300 !justify-between !px-3 ${
+                  filterMonths.length > 0
+                    ? "!border-[#FFA80F] !text-[#004FC0]"
+                    : ""
+                }`}
+              >
+                <span className="flex items-center gap-1.5 min-w-0">
+                  <span className="truncate">{monthBtnLabel}</span>
+                  {filterMonths.length > 0 && (
+                    <span className="flex-shrink-0 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold text-white bg-[#FFA80F] rounded-full">
+                      {filterMonths.length}
+                    </span>
+                  )}
+                </span>
+              </MenuButton>
+              <MenuList maxH="340px" overflowY="auto" minW="230px" py={2}>
+                <div className="flex items-center justify-between px-3 pb-2 mb-1 border-b border-gray-100">
+                  <span className="text-xs font-semibold text-gray-500">
+                    Pilih bulan
+                  </span>
+                  {filterMonths.length > 0 && (
+                    <button
+                      onClick={() => { setFilterMonths([]); setPage(1); }}
+                      className="text-[11px] text-red-500 hover:underline font-medium"
+                    >
+                      Hapus
+                    </button>
+                  )}
+                </div>
+                {months.map((m) => {
+                  const checked = filterMonths.includes(m.value);
+                  return (
+                    <MenuItem
+                      key={m.value}
+                      closeOnSelect={false}
+                      onClick={() => toggleMonth(m.value)}
+                      bg={checked ? "blue.50" : undefined}
+                      borderRadius="md"
+                      mx={1}
+                      my={0.5}
+                      w="auto"
+                    >
+                      <Checkbox
+                        isChecked={checked}
+                        pointerEvents="none"
+                        colorScheme="orange"
+                        mr={3}
+                      />
+                      <span
+                        className={
+                          checked
+                            ? "text-blue-700 font-semibold text-sm"
+                            : "text-gray-700 text-sm"
+                        }
+                      >
+                        {m.label}
+                      </span>
+                    </MenuItem>
+                  );
+                })}
+              </MenuList>
+            </Menu>
+
+            <Menu closeOnSelect={false}>
+              <MenuButton
+                as={Button}
+                rightIcon={<FaChevronDown />}
+                variant="outline"
+                size="sm"
+                w="full"
+                className={`!border-gray-300 !justify-between !px-3 ${
+                  filterYears.length > 0
+                    ? "!border-[#FFA80F] !text-[#004FC0]"
+                    : ""
+                }`}
+              >
+                <span className="flex items-center gap-1.5 min-w-0">
+                  <span className="truncate">{yearBtnLabel}</span>
+                  {filterYears.length > 0 && (
+                    <span className="flex-shrink-0 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold text-white bg-[#FFA80F] rounded-full">
+                      {filterYears.length}
+                    </span>
+                  )}
+                </span>
+              </MenuButton>
+              <MenuList maxH="340px" overflowY="auto" minW="200px" py={2}>
+                <div className="flex items-center justify-between px-3 pb-2 mb-1 border-b border-gray-100">
+                  <span className="text-xs font-semibold text-gray-500">
+                    Pilih tahun
+                  </span>
+                  {filterYears.length > 0 && (
+                    <button
+                      onClick={() => { setFilterYears([]); setPage(1); }}
+                      className="text-[11px] text-red-500 hover:underline font-medium"
+                    >
+                      Hapus
+                    </button>
+                  )}
+                </div>
+                {years.map((y) => {
+                  const checked = filterYears.includes(y);
+                  return (
+                    <MenuItem
+                      key={y}
+                      closeOnSelect={false}
+                      onClick={() => toggleYear(y)}
+                      bg={checked ? "blue.50" : undefined}
+                      borderRadius="md"
+                      mx={1}
+                      my={0.5}
+                      w="auto"
+                    >
+                      <Checkbox
+                        isChecked={checked}
+                        pointerEvents="none"
+                        colorScheme="orange"
+                        mr={3}
+                      />
+                      <span
+                        className={
+                          checked
+                            ? "text-blue-700 font-semibold text-sm"
+                            : "text-gray-700 text-sm"
+                        }
+                      >
+                        {y}
+                      </span>
+                    </MenuItem>
+                  );
+                })}
+              </MenuList>
+            </Menu>
+
+            {(search || filterMonths.length > 0 || filterYears.length > 0) && (
+              <button
+                onClick={resetFilters}
+                className="col-span-2 flex items-center justify-center gap-1 text-sm text-red-500 border border-red-200 bg-red-50 hover:bg-red-100 px-4 py-2 rounded-lg font-medium transition w-full"
+              >
+                ✕ Reset semua
+              </button>
+            )}
+          </div>
+  
+          {/* Chip filter aktif */}
+          {(selectedCategory?.id ||
+            search ||
+            filterMonths.length > 0 ||
+            filterYears.length > 0) && (
+            <div className="flex flex-wrap items-center gap-2 mt-5 pt-4 border-t border-gray-100">
+              <span className="text-xs font-semibold text-gray-500">Filter aktif:</span>
+
+              {selectedCategory?.id && (
+                <span className="flex items-center gap-1.5 bg-blue-50 text-[#004FC0] text-xs font-medium pl-3 pr-2 py-1.5 rounded-full border border-blue-100">
+                  {selectedCategory.name}
+                  <button
+                    onClick={() => setSelectedCategory(SEMUA_DESTINASI)}
+                    className="w-4 h-4 flex items-center justify-center rounded-full hover:bg-blue-200 transition text-[10px]"
+                  >
+                    ✕
+                  </button>
+                </span>
+              )}
+              {search && (
+                <span className="flex items-center gap-1.5 bg-blue-50 text-[#004FC0] text-xs font-medium pl-3 pr-2 py-1.5 rounded-full border border-blue-100">
+                  "{search}"
+                  <button
+                    onClick={() => setSearchInput("")}
+                    className="w-4 h-4 flex items-center justify-center rounded-full hover:bg-blue-200 transition text-[10px]"
+                  >
+                    ✕
+                  </button>
+                </span>
+              )}
+              {filterMonths.map((mVal) => (
+                <span
+                  key={`m-${mVal}`}
+                  className="flex items-center gap-1.5 bg-blue-50 text-[#004FC0] text-xs font-medium pl-3 pr-2 py-1.5 rounded-full border border-blue-100"
+                >
+                  {months.find((m) => m.value === mVal)?.label || mVal}
+                  <button
+                    onClick={() => toggleMonth(mVal)}
+                    className="w-4 h-4 flex items-center justify-center rounded-full hover:bg-blue-200 transition text-[10px]"
+                  >
+                    ✕
+                  </button>
+                </span>
+              ))}
+              {filterYears.map((yVal) => (
+                <span
+                  key={`y-${yVal}`}
+                  className="flex items-center gap-1.5 bg-blue-50 text-[#004FC0] text-xs font-medium pl-3 pr-2 py-1.5 rounded-full border border-blue-100"
+                >
+                  {yVal}
+                  <button
+                    onClick={() => toggleYear(yVal)}
+                    className="w-4 h-4 flex items-center justify-center rounded-full hover:bg-blue-200 transition text-[10px]"
+                  >
+                    ✕
+                  </button>
+                </span>
+              ))}
+            </div>
+          )}
+          {/* Kategori */}
+          <p className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3 mt-5">
+            Destinasi
+          </p>
+          {loadingCategory ? (
+            <Skeleton height="240px" className="rounded-xl" />
+          ) : (
+            <>
+              {/* Mobile: dropdown kategori */}
+              <div className="w-full font-sans border border-orange-500 rounded-lg overflow-hidden xl:hidden">
+                <div
+                  className="bg-[#FFA80F] text-white px-4 py-3 cursor-pointer flex items-center justify-between w-full"
+                  onClick={() => setIsOpenDropdown(!isOpenDropdown)}
+                >
+                  <div className="flex flex-col">
+                    <p className="font-bold text-lg">{selectedCategory?.name}</p>
+                    {!isOpenDropdown && (
+                      <p className="text-[10px] text-white opacity-80 -mt-1">
+                        Klik untuk pilih Destinasi lain
+                      </p>
+                    )}
+                  </div>
+                  {isOpenDropdown ? (
+                    <FaChevronUp className="ml-2 w-5 h-5" />
+                  ) : (
+                    <FaChevronDown className="ml-2 w-5 h-5" />
+                  )}
+                </div>
+                {isOpenDropdown && (
+                  <div className="bg-white max-h-64 overflow-y-auto">
+                    {allCategoryList?.map((category) => (
+                      <div
+                        key={category?.id ?? "semua"}
+                        onClick={() => {
+                          setSelectedCategory(category);
+                          setPage(1);
+                        }}
+                        className={`px-4 py-2 cursor-pointer transition ${
+                          selectedCategory?.id === category?.id
+                            ? "bg-orange-100 text-[#004FC0] font-semibold"
+                            : "text-blue-700 hover:bg-orange-50"
+                        }`}
+                      >
+                        {category?.name}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Desktop: list kategori */}
+              <ul className="hidden xl:flex xl:flex-col gap-1.5">
+                {allCategoryList?.map((category) => {
+                  const isActive = selectedCategory?.id === category?.id;
+                  return (
+                    <li
+                      key={category?.id ?? "semua"}
+                      onClick={() => {
+                        setSelectedCategory(category);
+                        setPage(1);
+                      }}
+                      className={`text-sm font-medium py-2.5 px-4 rounded-lg cursor-pointer transition-all border ${
+                        isActive
+                          ? "bg-[#FFA80F] text-white border-[#FFA80F] shadow-sm shadow-orange-200"
+                          : "bg-white text-blue-700 border-gray-200 hover:border-[#FFA80F] hover:bg-orange-50"
+                      }`}
+                    >
+                      {category?.name}
+                    </li>
+                  );
+                })}
+              </ul>
+            </>
+          )}
+          </div>
+          {/* /LEFT RAIL */}
+
+          {/* ===== RIGHT: Produk ===== */}
+          <div className="flex-1 w-full min-w-0">
+        {/* Jumlah hasil */}
+        {!loadingProduct && productData?.length > 0 && (
+          <p className="text-sm text-gray-500 mb-4">
+            Menampilkan{" "}
+            <span className="font-semibold text-gray-700">
+              {productData.length}
+            </span>
+            {totalProduct ? (
+              <>
+                {" "}
+                dari{" "}
+                <span className="font-semibold text-gray-700">
+                  {totalProduct}
+                </span>
+              </>
+            ) : (
+              ""
+            )}{" "}
+            trip
+          </p>
+        )}
+  
+        {/* ============ GRID PRODUK ============ */}
+        <div className="grid grid-cols-1 2xl:grid-cols-3 sm:grid-cols-2 lg:gap-6 md:gap-4 gap-2">
+          {loadingCategory || loadingProduct ? (
+            <>
+              <Skeleton height="300" />
+              <Skeleton height="300" />
+              <Skeleton height="300" />
+            </>
+          ) : productData?.length === 0 ? (
+            <div className="col-span-full flex flex-col items-center justify-center py-16 text-center">
+              <div className="text-5xl mb-3">🔍</div>
+              <p className="text-lg font-semibold text-gray-700">
+                Tidak ada trip untuk filter ini
+              </p>
+              <p className="text-sm text-gray-500 mb-4">
+                Coba ubah bulan/tahun, pilih destinasi lain, atau reset filter
+              </p>
+              <button
+                onClick={resetFilters}
+                className="bg-[#004FC0] text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-blue-700"
+              >
+                Reset Filter
+              </button>
+            </div>
+          ) : (
+            productData?.map((product, index) => (
+              <div
+                key={index}
+                className="md:p-3 p-1 border-2 rounded-lg relative transition-transform duration-300 hover:cursor-pointer hover:shadow-xl bg-slate-50"
               onClick={() => handleCardClick(product)}
             >
               <div className="relative">
@@ -535,37 +871,157 @@ const Packages = () => {
                 </button>
               </div>
             </div>
-          ))
-        )}
-
-        {totalProduct > 9 && productData.length < totalProduct && (
-          <div className="relative col-span-full">
-            <div className="absolute left-1/2 transform -translate-x-1/2 mt-6">
-              <button
-                className="text-blue-700 font-semibold md:text-base text-xs"
-                onClick={onLoadMore}
-                disabled={loadingProduct}
-              >
-                {loadingProduct ? "Loading..." : "Lihat Lebih Banyak Trip"}
-              </button>
+            ))
+          )}
+  
+          {totalProduct > 9 && productData.length < totalProduct && (
+            <div className="relative col-span-full">
+              <div className="absolute left-1/2 transform -translate-x-1/2 mt-6">
+                <button
+                  className="text-blue-700 font-semibold md:text-base text-xs"
+                  onClick={onLoadMore}
+                  disabled={loadingProduct}
+                >
+                  {loadingProduct ? "Loading..." : "Lihat Lebih Banyak Trip"}
+                </button>
+              </div>
             </div>
+          )}
           </div>
-        )}
+          {/* /Kolom produk */}
+          </div>
+        </div>
+        {/* /Body grid */}
+
+        {/* ===== MOBILE: Drawer Destinasi ===== */}
+        <Drawer isOpen={isDestOpen} onClose={onDestClose} placement="bottom">
+          <DrawerOverlay />
+          <DrawerContent borderTopRadius="2xl" maxH="85vh">
+            <DrawerHeader borderBottomWidth="1px">
+              <span className="text-[#004FC0] font-bold text-lg">
+                Pilih Destinasi
+              </span>
+              <DrawerCloseButton />
+            </DrawerHeader>
+            <DrawerBody className="!py-4">
+              <div className="flex flex-col gap-1.5">
+                {allCategoryList?.map((category) => {
+                  const isActive = selectedCategory?.id === category?.id;
+                  return (
+                    <button
+                      key={category?.id ?? "semua"}
+                      onClick={() => {
+                        setSelectedCategory(category);
+                        setPage(1);
+                        onDestClose();
+                      }}
+                      className={`text-sm font-medium py-2.5 px-4 rounded-lg border text-left transition-all ${
+                        isActive
+                          ? "bg-[#FFA80F] text-white border-[#FFA80F]"
+                          : "bg-white text-blue-700 border-gray-200"
+                      }`}
+                    >
+                      {category?.name}
+                    </button>
+                  );
+                })}
+              </div>
+            </DrawerBody>
+          </DrawerContent>
+        </Drawer>
+
+        {/* ===== MOBILE: Drawer Waktu (Bulan & Tahun) ===== */}
+        <Drawer isOpen={isWaktuOpen} onClose={onWaktuClose} placement="bottom">
+          <DrawerOverlay />
+          <DrawerContent borderTopRadius="2xl" maxH="85vh">
+            <DrawerHeader borderBottomWidth="1px">
+              <span className="text-[#004FC0] font-bold text-lg">
+                Waktu Keberangkatan
+              </span>
+              <DrawerCloseButton />
+            </DrawerHeader>
+            <DrawerBody className="!py-4">
+              {/* Bulan */}
+              <p className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">
+                Bulan
+              </p>
+              <div className="grid grid-cols-3 gap-2 mb-6">
+                {months.map((m) => {
+                  const checked = filterMonths.includes(m.value);
+                  return (
+                    <button
+                      key={m.value}
+                      onClick={() => toggleMonth(m.value)}
+                      className={`text-sm py-2 px-2 rounded-lg border transition ${
+                        checked
+                          ? "bg-blue-50 text-[#004FC0] border-[#004FC0] font-semibold"
+                          : "bg-white text-gray-600 border-gray-200"
+                      }`}
+                    >
+                      {m.label}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Tahun */}
+              <p className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">
+                Tahun
+              </p>
+              <div className="grid grid-cols-4 gap-2">
+                {years.map((y) => {
+                  const checked = filterYears.includes(y);
+                  return (
+                    <button
+                      key={y}
+                      onClick={() => toggleYear(y)}
+                      className={`text-sm py-2 px-2 rounded-lg border transition ${
+                        checked
+                          ? "bg-blue-50 text-[#004FC0] border-[#004FC0] font-semibold"
+                          : "bg-white text-gray-600 border-gray-200"
+                      }`}
+                    >
+                      {y}
+                    </button>
+                  );
+                })}
+              </div>
+            </DrawerBody>
+            <DrawerFooter borderTopWidth="1px" gap={3}>
+              <button
+                onClick={() => {
+                  setFilterMonths([]);
+                  setFilterYears([]);
+                  setPage(1);
+                }}
+                className="flex-1 border border-gray-300 text-gray-600 py-2.5 rounded-xl font-medium"
+              >
+                Reset
+              </button>
+              <button
+                onClick={onWaktuClose}
+                className="flex-1 bg-[#004FC0] text-white py-2.5 rounded-xl font-semibold"
+              >
+                Lihat hasil
+              </button>
+            </DrawerFooter>
+          </DrawerContent>
+        </Drawer>
+
+        <LeadFormModal
+          isOpen={leadModal.open}
+          onClose={() => setLeadModal({ open: false, product: null })}
+          productTitle={leadModal.product?.title || ""}
+          categoryName={getCategoryName(leadModal.product)}
+          productUrl={
+            leadModal.product
+              ? `${window.location.origin}/tour-schedule/category/${slugify(getCategoryName(leadModal.product))}/${createTripSlug(leadModal.product.title, leadModal.product.date)}`
+              : ""
+          }
+        />
       </div>
-      <LeadFormModal
-        isOpen={leadModal.open}
-        onClose={() => setLeadModal({ open: false, product: null })}
-        productTitle={leadModal.product?.title || ""}
-        categoryName={getCategoryName(leadModal.product)}
-        productUrl={
-          leadModal.product
-            ? `${window.location.origin}/tour-schedule/category/${slugify(getCategoryName(leadModal.product))}/${createTripSlug(leadModal.product.title, leadModal.product.date)}`
-            : ""
-        }
-      />
-    </div>
-  );
-};
+    );
+  };
 
 
 

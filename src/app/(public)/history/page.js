@@ -170,7 +170,7 @@ export default function TourSchedule() {
               </p>
               <div className="flex flex-col min-[650px]:flex-row gap-3 sm:gap-4 justify-center px-2">
                 <a
-                  href="/tour-schedule/category/1"
+                  href="/tour-schedule/category/all"
                   className="bg-gradient-to-r from-[#004FC0] to-[#0066FF] text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl font-bold text-sm sm:text-base md:text-lg hover:from-[#0066FF] hover:to-[#004FC0] transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1 inline-flex items-center justify-center gap-2"
                 >
                   Lihat Paket Tour
