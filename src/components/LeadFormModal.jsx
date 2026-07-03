@@ -59,6 +59,10 @@ const LeadFormModal = ({
   const handleSubmit = async () => {
     if (!validate()) return;
 
+    // iOS fix: buka tab SINKRON di dalam gesture tap user dulu,
+    // baru diisi URL WA-nya setelah data tersimpan.
+    const waWindow = window.open("", "_blank");
+
     try {
       setIsSubmitting(true);
 
@@ -71,7 +75,6 @@ const LeadFormModal = ({
         productTitle,
       });
 
-      // Google Ads conversion tracking
       if (typeof window !== "undefined" && typeof window.gtag === "function") {
         window.gtag("event", "conversion", {
           send_to: "AW-11485070277/WOKICKb14MkcEMWHweQq",
@@ -90,11 +93,21 @@ const LeadFormModal = ({
           `${productUrl}`
       );
 
-      window.open(`https://wa.me/${WA_NUMBER}?text=${waMessage}`, "_blank");
+      const waUrl = `https://wa.me/${WA_NUMBER}?text=${waMessage}`;
+
+      if (waWindow) {
+        // arahkan tab yang sudah terbuka tadi
+        waWindow.location.href = waUrl;
+      } else {
+        // fallback kalau tab tetap diblokir: pindah di tab yang sama
+        window.location.href = waUrl;
+      }
 
       showToast({ message: "Data berhasil dikirim!", type: "success" });
       handleClose();
     } catch (error) {
+      // tutup tab kosong kalau proses simpan gagal
+      if (waWindow) waWindow.close();
       showToast({
         message: error?.response?.data?.message || "Gagal mengirim data",
         type: "error",
