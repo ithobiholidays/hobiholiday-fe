@@ -12,34 +12,34 @@ export const metadata = {
 export default function Contact() {
   const agents = [
     {
-      name: "Marhaeni Riska Hasana Audina",
+      name: "Hany",
       description:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
       image: "/agent/riska.jpg",
     },
     {
-      name: "Fahrul Rodzi",
+      name: "Fahrul",
       description:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
       image: "/agent/irul.jpg",
     },
     {
-      name: "Muhammad Noor",
+      name: "Adhan",
       description:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
       image: "/agent/noor.jpg",
     },
     {
-      name: "Silmi Eka Siswanti",
+      name: "Silmi",
       description:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
       image: "/agent/silmi.jpg",
     },
     {
-      name: "Bintang Putra Rianto",
+      name: "Risky",
       description:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-      image: "/agent/bintang.jpg",
+      image: "/agent/risky.jpg",
     },
   ];
 
