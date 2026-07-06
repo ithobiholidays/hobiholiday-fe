@@ -729,7 +729,7 @@ const Packages = () => {
         )}
   
         {/* ============ GRID PRODUK ============ */}
-        <div className="grid grid-cols-1 2xl:grid-cols-3 sm:grid-cols-2 lg:gap-6 md:gap-4 gap-2">
+        <div className="grid grid-cols-1 2xl:grid-cols-3 sm:grid-cols-2 lg:gap-6 md:gap-4 gap-2 items-stretch">
           {loadingCategory || loadingProduct ? (
             <>
               <Skeleton height="300" />
@@ -756,7 +756,7 @@ const Packages = () => {
             productData?.map((product, index) => (
               <div
                 key={index}
-                className="md:p-3 p-1 border-2 rounded-lg relative transition-transform duration-300 hover:cursor-pointer hover:shadow-xl bg-slate-50"
+                className="md:p-3 p-1 border-2 rounded-lg relative transition-transform duration-300 hover:cursor-pointer hover:shadow-xl bg-slate-50 flex flex-col h-full"
               onClick={() => handleCardClick(product)}
             >
               <div className="relative">
@@ -790,16 +790,16 @@ const Packages = () => {
                   </p>
                 </div>
               </div>
-              <div className="bg-[#FFA80F] flex flex-col items-center justify-center py-1 mt-1 w-full">
-                <p className="font-semibold text-white lg:text-xl text-center text-xs md:text-base px-2">
+              <div className="bg-[#FFA80F] flex flex-col items-center justify-center py-1 mt-1 w-full min-h-[72px]">
+                <p className="font-semibold text-white lg:text-xl text-center text-xs md:text-base px-2 line-clamp-2">
                   {product?.title}
                 </p>
                 <p className="text-[#004FC0] font-bold md:text-base text-xs">
                   {product?.date}
                 </p>
               </div>
-              <div className="bg-[#004FC0] flex lg:flex-row flex-col md:gap-4 gap-2 md:p-4 p-1 py-2 mt-1 rounded-b-lg items-center">
-                <p className="text-white order-2 lg:order-1 md:text-sm text-[10px] col-span-3 lg:border-r pr-1 border-white flex-1 text-center">
+              <div className="bg-[#004FC0] flex lg:flex-row flex-col md:gap-4 gap-2 md:p-4 p-1 py-2 mt-1 rounded-b-lg items-center min-h-[100px]">
+                <p className="text-white order-2 lg:order-1 md:text-sm text-[10px] col-span-3 lg:border-r pr-1 border-white flex-1 text-center line-clamp-4">
                   {product?.detail}
                 </p>
                 <div className="min-w-[60px] order-1 lg:order-2 flex flex-col lg:gap-0 md:gap-2 items-center border-b py-2 lg:border-none lg:pb-0">
@@ -817,7 +817,7 @@ const Packages = () => {
                 </div>
               </div>
 
-              <div className="flex gap-1 mt-4 justfiy-between items-center lg:flex flex-wrap">
+              <div className="flex gap-1 mt-auto pt-4 justfiy-between items-center lg:flex flex-wrap">
                 <Popover placement="bottom-start">
                   <PopoverTrigger>
                     <button
