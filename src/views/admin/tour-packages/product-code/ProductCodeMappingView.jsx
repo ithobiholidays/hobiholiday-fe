@@ -44,6 +44,7 @@ const ProductCodeMappingView = () => {
     const [filterSoldOut, setFilterSoldOut] = useState('false');
     const [filterHasCode, setFilterHasCode] = useState('');
     const [filterInputted, setFilterInputted] = useState('');
+    const [filterCekat, setFilterCekat] = useState('');
 
     useEffect(() => {
         getCategories('/category/all');
@@ -51,7 +52,7 @@ const ProductCodeMappingView = () => {
 
     useEffect(() => {
         fetchData();
-    }, [page, searchValue, filterMonth, filterYear, filterCategory, filterActive, filterSoldOut, filterHasCode, filterInputted]);
+    }, [page, searchValue, filterMonth, filterYear, filterCategory, filterActive, filterSoldOut, filterHasCode, filterInputted, filterCekat]);
 
     const fetchData = async () => {
         try {
@@ -66,6 +67,7 @@ const ProductCodeMappingView = () => {
                 ...(filterSoldOut !== '' && { isSoldOut: filterSoldOut === 'true' }),
                 ...(filterHasCode !== '' && { hasCode: filterHasCode === 'true' }),
                 ...(filterInputted !== '' && { isInputted: filterInputted === 'true' }),
+                ...(filterCekat !== '' && { isCekat: filterCekat === 'true' }),
             });
         } catch (error) {
             console.log(error);
@@ -87,6 +89,16 @@ const ProductCodeMappingView = () => {
         }
     };
 
+    const handleToggleCekat = async (row) => {
+        try {
+            await updateData('/product/cekat', { id: row.id, status: !row.isCekat });
+            showToast({ message: 'Status Cekat diperbarui!', type: 'success' });
+            fetchData();
+        } catch {
+            showToast({ message: 'Gagal update status Cekat', type: 'error' });
+        }
+    };
+
     const handleGenerateAll = async () => {
         try {
             const res = await generateCodes('/product/generate-all-codes', {});
@@ -100,7 +112,7 @@ const ProductCodeMappingView = () => {
     const hasActiveFilter =
         filterMonth || filterYear ||
         filterActive !== 'true' || filterSoldOut !== 'false' ||
-        filterHasCode || filterInputted;
+        filterHasCode || filterInputted || filterCekat;
 
     const columns = [
         {
@@ -162,6 +174,21 @@ const ProductCodeMappingView = () => {
                     />
                     <span className={`text-sm ${row.isInputted ? 'text-green-600' : 'text-gray-400'}`}>
                         {row.isInputted ? 'Inputted' : 'Pending'}
+                    </span>
+                </div>
+            ),
+        },
+        {
+            key: 'isCekat',
+            label: 'Cekat',
+            render: (row) => (
+                <div className="flex items-center gap-2">
+                    <Switch
+                        isChecked={row.isCekat}
+                        onChange={() => handleToggleCekat(row)}
+                    />
+                    <span className={`text-sm ${row.isCekat ? 'text-green-600' : 'text-gray-400'}`}>
+                        {row.isCekat ? 'Inputted' : 'Pending'}
                     </span>
                 </div>
             ),
@@ -238,6 +265,12 @@ const ProductCodeMappingView = () => {
                     <option value="false">Belum Diinput</option>
                 </select>
 
+                <select value={filterCekat} onChange={(e) => { setFilterCekat(e.target.value); setPage(1); }} className="border border-gray-300 rounded px-2 py-1 text-sm">
+                    <option value="">Semua Cekat</option>
+                    <option value="true">Sudah Diinput</option>
+                    <option value="false">Belum Diinput</option>
+                </select>
+
                 <select value={filterMonth} onChange={(e) => { setFilterMonth(e.target.value); setPage(1); }} className="border border-gray-300 rounded px-2 py-1 text-sm">
                     <option value="">Semua Bulan</option>
                     {months.map((m) => (
@@ -256,7 +289,7 @@ const ProductCodeMappingView = () => {
                     <button
                         onClick={() => {
                             setFilterActive('true'); setFilterSoldOut('false');
-                            setFilterHasCode(''); setFilterInputted('');
+                            setFilterHasCode(''); setFilterInputted(''); setFilterCekat('');
                             setFilterCategory(''); setFilterMonth('');
                             setFilterYear(''); setPage(1);
                         }}
