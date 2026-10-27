@@ -16,10 +16,10 @@ export default function TourSchedule() {
       {/* Main Content Section */}
       <div className="bg-gradient-to-b from-blue-50 via-white to-blue-50 py-8 sm:py-12 md:py-16 lg:py-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-          
+
           {/* Hero Section - Image on Top, Text Below */}
           <div className="flex flex-col items-center mb-12 sm:mb-16 lg:mb-20">
-            
+
             {/* Image Section - Top */}
             <div className="relative group w-full max-w-4xl mb-8 sm:mb-10 md:mb-12">
               <div className="absolute -inset-2 sm:-inset-4 bg-gradient-to-r from-[#004FC0] to-[#FFA80F] rounded-2xl sm:rounded-3xl opacity-20 blur-xl sm:blur-2xl group-hover:opacity-30 transition-opacity duration-500"></div>
@@ -55,11 +55,11 @@ export default function TourSchedule() {
 
                 {/* Description */}
                 <p className="text-gray-700 text-sm sm:text-base md:text-lg leading-relaxed mb-6 sm:mb-8 max-w-3xl mx-auto px-2">
-                  Berdiri di sebuah kantor kecil berlokasi di timur kota Jakarta. 
-                  Sejak awal kami mendedikasikan diri untuk melayani pelanggan 
-                  berlibur ke luar negeri dengan ragam destinasi di lima benua. 
+                  Berdiri di sebuah kantor kecil berlokasi di timur kota Jakarta.
+                  Sejak awal kami mendedikasikan diri untuk melayani pelanggan
+                  berlibur ke luar negeri dengan ragam destinasi di lima benua.
                   Hingga saat ini kami telah melayani lebih dari
-                  <span className="font-bold text-[#004FC0]"> 15.000 pelanggan</span> di seluruh 
+                  <span className="font-bold text-[#004FC0]"> 20.000+ pelanggan</span> di seluruh
                   Indonesia dari Timur hingga Barat.
                 </p>
               </div>
@@ -85,7 +85,7 @@ export default function TourSchedule() {
                     </svg>
                   </div>
                   <div className="text-left">
-                    <h4 className="font-bold text-gray-800 text-base sm:text-lg mb-0.5 sm:mb-1">15.000+</h4>
+                    <h4 className="font-bold text-gray-800 text-base sm:text-lg mb-0.5 sm:mb-1">20.000+</h4>
                     <p className="text-xs sm:text-sm text-gray-600">Pelanggan puas</p>
                   </div>
                 </div>
@@ -95,7 +95,7 @@ export default function TourSchedule() {
 
           {/* Vision & Mission Section */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6 lg:gap-8 mb-12 sm:mb-16 lg:mb-20">
-            
+
             {/* Vision Card */}
             <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg sm:shadow-xl p-5 sm:p-6 md:p-8 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-t-4 border-[#004FC0]">
               <div className="flex items-center gap-3 sm:gap-4 mb-5 sm:mb-6">
@@ -112,17 +112,31 @@ export default function TourSchedule() {
               </div>
 
               <div className="space-y-3 sm:space-y-4">
-                <div className="flex items-start gap-3 bg-blue-50 p-3 sm:p-4 rounded-lg sm:rounded-xl">
-                  <div className="bg-[#004FC0] rounded-full p-1 mt-0.5 sm:mt-1 flex-shrink-0">
-                    <svg className="w-3 h-3 sm:w-4 sm:h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
+                {[
+                  {
+                    title: "IPO di 2028",
+                    desc: "Menjadi perusahaan publik yang terpercaya di industri travel Indonesia",
+                  },
+                  {
+                    title: "Ekosistem Terpercaya di Indonesia",
+                    desc: "Menjadi ekosistem tour travel yang disegani di Indonesia",
+                  },
+                ].map((item, index) => (
+                  <div
+                    key={index}
+                    className="flex items-start gap-3 bg-blue-50 p-3 sm:p-4 rounded-lg sm:rounded-xl hover:bg-blue-100 transition-colors"
+                  >
+                    <div className="bg-[#004FC0] rounded-full p-1 mt-0.5 sm:mt-1 flex-shrink-0">
+                      <svg className="w-3 h-3 sm:w-4 sm:h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-gray-800 font-semibold text-sm sm:text-base md:text-lg">{item.title}</p>
+                      <p className="text-xs sm:text-sm text-gray-600 mt-1">{item.desc}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-gray-800 font-semibold text-sm sm:text-base md:text-lg">IPO di 2028</p>
-                    <p className="text-xs sm:text-sm text-gray-600 mt-1">Menjadi perusahaan publik yang terpercaya di industri travel Indonesia</p>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
 

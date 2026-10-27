@@ -28,10 +28,10 @@ const Hero2 = () => {
           yang Tak Terlupakan bersama
         </h2>
         <h2 className="hd:text-5xl 3xl:text-4xl 2xl:text-3xl xl:text-3xl lg:text-2xl font-bold text-blue-800 text-wrap mt-2 xl:block hidden">
-          Hobi Holidays!
+          Hobi Holidays - Travel More, Feel Deeper!
         </h2>
         <p className=" font-medium 3xl:text-lg hd:text-xl mt-8">
-          Liburan Anda akan berkesan bersama kami. Lebih dari 15 ribu orang
+          Liburan Anda akan berkesan bersama kami. Lebih dari 20 ribu orang
           telah mengarungi indahnya dunia mulai Asia, Eropa, Amerika hingga
           Afrika. Kami berjanji menghadirkan bukan sekadar perjalanan, tetapi
           kenangan yang akan Anda bawa selamanya. Bergabunglah dengan kami, dan
