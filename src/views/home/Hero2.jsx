@@ -31,12 +31,13 @@ const Hero2 = () => {
           Hobi Holidays - Travel More, Feel Deeper!
         </h2>
         <p className=" font-medium 3xl:text-lg hd:text-xl mt-8">
-          Liburan Anda akan berkesan bersama kami. Lebih dari 20 ribu orang
-          telah mengarungi indahnya dunia mulai Asia, Eropa, Amerika hingga
-          Afrika. Kami berjanji menghadirkan bukan sekadar perjalanan, tetapi
-          kenangan yang akan Anda bawa selamanya. Bergabunglah dengan kami, dan
-          pastikan setiap langkah perjalanan Anda adalah langkah menuju
-          pengalaman hidup yang autentik dan menakjubkan.
+          Dunia terlalu luas untuk sekadar dikunjungi. 
+          Karena itu, Hobiholidays menghadirkan perjalanan yang membantu Anda mengenal lebih 
+          banyak tempat, lebih banyak budaya, dan lebih banyak manusia. 
+          Setiap itinerary dirancang bukan hanya untuk melihat yang indah, 
+          tetapi juga untuk merasakan yang bermakna. Sebab kami percaya, semakin banyak Anda menjelajah, 
+          semakin dalam Anda memahami dunia, orang lain, dan bahkan diri sendiri. 
+          Travel More, Feel Deeper.
         </p>
 
         <div className="w-full xl:hidden rounded-lg col-span-2 my-5 aspect-square flex justify-center items-center overflow-hidden">
